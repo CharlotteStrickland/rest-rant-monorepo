@@ -11,14 +11,14 @@ function PlaceDetails() {
 
 	const [place, setPlace] = useState(null)
 
-	useEffect(() => {
-		const fetchData = async () => {
-			const response = await fetch(`http://localhost:5000/places/${placeId}`)
-			const resData = await response.json()
-			setPlace(resData)
-		}
-		fetchData()
-	}, [placeId])
+		useEffect(() => {
+			const fetchData = async () => {
+				const response = await fetch(`http://localhost:5000/places/${placeId}`)
+				const resData = await response.json()
+				setPlace(resData)
+			}
+			fetchData()
+		}, [placeId])
 
 	if (place === null) {
 		return <h1>Loading</h1>
@@ -101,6 +101,22 @@ function PlaceDetails() {
 		})
 	}
 
+	let placeActions = null
+
+	// eslint-disable-next-line no-undef
+	if (currentUser?.role === 'admin') {
+		placeActions = (
+			<>
+				<a className="btn btn-warning" onClick={editPlace}>
+					Edit
+				</a>
+				<button type="submit" className="btn btn-danger" onClick={deletePlace}>
+					Delete
+				</button>
+			</>
+		)
+	}
+
 
 	return (
 		<main>
@@ -127,6 +143,7 @@ function PlaceDetails() {
 					<h4>
 						Serving {place.cuisines}.
 					</h4>
+					{placeActions}
 					<br />
 					<a className="btn btn-warning" onClick={editPlace}>
 						Edit
