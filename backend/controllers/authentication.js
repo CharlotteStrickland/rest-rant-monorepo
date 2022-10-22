@@ -19,7 +19,6 @@ router.post('/', async (req, res) => {
     }
 })
 
-___
 router.get('/profile', async (req, res) => {
     console.log(req.session.userId)
     try {
