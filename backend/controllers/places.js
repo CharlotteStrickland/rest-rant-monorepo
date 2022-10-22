@@ -7,6 +7,9 @@ router.post('/', async (req, res) => {
     if (req.currentUser?.role !== 'admin') {
         return res.status(403).json({ message: 'You are not allowed to add a place'})
     }
+    if (!req.body.pic) {
+        req.body.pic = 'http://placekitten.com/400/400'
+    }
     if (!req.body.city) {
         req.body.city = 'Anytown'
     }
@@ -94,6 +97,22 @@ router.post('/:placeId/comments', async (req, res) => {
         res.status(404).json({ message: `Could not find place with id "${placeId}"` })
     }
 
+    let currentUser;
+    try {
+        const [method, token] = req.headers.authorization.split(' ')
+        if (method == 'Bearer') {
+            const result = await jwt.decode(process.env.JWT_SECRET, token)
+            const { id } = result.value
+            currentUser = await User.findOne({
+                where: {
+                    userId: id
+                }
+            })
+        }
+    } catch {
+        currentUser = null
+    }
+
     const author = await User.findOne({
         where: { userId: req.body.authorId }
     })
@@ -104,6 +123,7 @@ router.post('/:placeId/comments', async (req, res) => {
 
     const comment = await Comment.create({
         ...req.body,
+        authorId: currentUser.userId,
         placeId: placeId
     })
 
